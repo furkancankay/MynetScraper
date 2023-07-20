@@ -43,15 +43,21 @@ class MynetHisseBilgileri:
             return dictionary
     def saveAsAJsonFile(self, datas):
         try:
-            data_list = json.load(open("HisseVerileri.json"))
-            if("UNLU YATIRIM HOLDING" in data_list.brand):
-                print('Updating the datas.')
+            with open("HisseVerileri.json", "r", encoding="utf-8") as dosya:
+                data_list = json.load(dosya)
+            
+            for item in data_list:
+                if item['brand'] == datas['brand']:
+                    item['veriler'] = datas['veriler']
+                    break
+            else:
+                data_list.append(datas)
         except:
-            data_list = []
+            data_list = [datas]
 
-        data_list.append(datas) 
-        with open("HisseVerileri.json", "w",encoding="utf-8") as dosya:
+        with open("HisseVerileri.json", "w", encoding="utf-8") as dosya:
             json.dump(data_list, dosya, ensure_ascii=False, indent=4)
+
 
 
 if(__name__ == '__main__'):
@@ -61,5 +67,6 @@ if(__name__ == '__main__'):
         brandsLink = MynetHisseBilgileri().getStocksLinks(chosenBrand)
         StockData = MynetHisseBilgileri().takeDataFromLink(brandsLink)
         MynetHisseBilgileri().saveAsAJsonFile(StockData)
-        if(input('Press "e" to exit or press anything: ') == "e"):
+        breaker = input('Press "e" to exit or press anything: ')
+        if(breaker == "e"):
             break
