@@ -57,11 +57,11 @@ make run
 #
 if(__name__ == '__main__'):
     while True:
-        MynetHisseBilgileri().showAllStocksNames()                        # User can see all brands
-        chosenBrand = input('Enter which you want brand: ')               # Then brand's name taking
-        brandsLink = MynetHisseBilgileri().getStocksLinks(chosenBrand)    # From brand's name, it is taking the brand's link
-        StockData = MynetHisseBilgileri().takeDataFromLink(brandsLink)    # From brand's Link, it is taking the brand's datas
-        MynetHisseBilgileri().saveAsAJsonFile(StockData)                  # And the datas can be save as a json file
+        MynetHisseBilgileri().showAllStocksNames()                      # User can see all brands
+        chosenBrand = input('Enter which you want brand: ')             # Then brand's name taking
+        brandsLink = MynetHisseBilgileri().getStocksLinks(chosenBrand)  # From brand's name, it is taking the brand's link
+        StockData = MynetHisseBilgileri().takeDataFromLink(brandsLink)  # From brand's Link, it is taking the brand's datas
+        MynetHisseBilgileri().saveAsAJsonFile(StockData)                # And the datas can be save as a json file
         breaker = input('Press "e" to exit or press anything: ')
         if(breaker == "e"):
             break
