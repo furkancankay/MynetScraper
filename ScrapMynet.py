@@ -1,30 +1,39 @@
+"""In this project, we will scrap some stock values and save from mynet.com."""
+
 import json
 from selenium import webdriver
 from bs4 import BeautifulSoup
 
 class MynetHisseBilgileri:
+    """Necessary values are drawn with the beautifulsoup library as initial values."""
     def __init__(self):
         self.driver = webdriver.Safari()
         self.url = 'https://finans.mynet.com/borsa/hisseler/'
         self.driver.get(self.url)
         self.page_source = self.driver.page_source
         self.soup = BeautifulSoup(self.page_source, 'html.parser')
-    def getStocksLinks(self,name):
-        if(name == ''):
+    def get_stocks_links(self,name:str):
+        """Its takes brand's name."""
+        if name == '':
             name = input('Enter a brand that you want: ')
         else:
             pass
-        tbodyBrands = self.soup.select('span.hide-m')
-        for i in range(len(tbodyBrands)):
-            if(tbodyBrands[i].text == name):
-                self.links = self.soup.select('tbody > tr > td > strong > a')
-                return self.links[i]['href']
-    def showAllStocksNames(self):
-        tbodyBrands = self.soup.select('span.hide-m')
-        for i in range(len(tbodyBrands)):
-            print(tbodyBrands[i].text)
-    def takeDataFromLink(self, url):
-        self.driver.get(url)  # url argümanını direkt olarak kullanın, 'href' eklemeyin
+        tbodybrands = self.soup.select('span.hide-m')
+        for i,brand in enumerate(tbodybrands):
+            if brand.text == name:
+                links = self.soup.select('tbody > tr > td > strong > a')
+                return links[i]['href']
+
+
+    def show_all_stocks_names(self):
+        """Fetches the links from the names of the shares."""
+        tbodybrands = self.soup.select('span.hide-m')
+        for i in tbodybrands:
+            print(i.text)
+
+    def take_data_from_link(self, url):
+        """Pulls stock data from links."""
+        self.driver.get(url)
         page_source = self.driver.page_source
         soup = BeautifulSoup(page_source, 'html.parser')
         datas = soup.select('.flex-list-2-col')
@@ -41,18 +50,18 @@ class MynetHisseBilgileri:
                 print(f"{label}: {value}")
                 dictionary["veriler"].append({label: value})
             return dictionary
-    def saveAsAJsonFile(self, datas):
+    def save_as_a_jsonfile(self, datas):
+        """Saves data as json."""
         try:
             with open("HisseVerileri.json", "r", encoding="utf-8") as dosya:
                 data_list = json.load(dosya)
-            
             for item in data_list:
                 if item['brand'] == datas['brand']:
                     item['veriler'] = datas['veriler']
                     break
             else:
                 data_list.append(datas)
-        except:
+        except FileExistsError:
             data_list = [datas]
 
         with open("HisseVerileri.json", "w", encoding="utf-8") as dosya:
@@ -60,13 +69,13 @@ class MynetHisseBilgileri:
 
 
 
-if(__name__ == '__main__'):
+if __name__ == '__main__':
     while True:
-        MynetHisseBilgileri().showAllStocksNames()
+        MynetHisseBilgileri().show_all_stocks_names()
         chosenBrand = input('Enter which you want brand: ')
-        brandsLink = MynetHisseBilgileri().getStocksLinks(chosenBrand)
-        StockData = MynetHisseBilgileri().takeDataFromLink(brandsLink)
-        MynetHisseBilgileri().saveAsAJsonFile(StockData)
+        brandsLink = MynetHisseBilgileri().get_stocks_links(chosenBrand)
+        StockData = MynetHisseBilgileri().take_data_from_link(brandsLink)
+        MynetHisseBilgileri().save_as_a_jsonfile(StockData)
         breaker = input('Press "e" to exit or press anything: ')
-        if(breaker == "e"):
+        if breaker == "e":
             break
